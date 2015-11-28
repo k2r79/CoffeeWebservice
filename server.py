@@ -7,6 +7,7 @@ import time
 app = Flask(__name__)
 
 # GPIO Pins
+ON_OFF_PIN = 11
 LED_PIN = 12
 
 @app.route("/", methods=["GET"])
@@ -18,7 +19,14 @@ def on():
     on = is_on()
 
     if request.method == "POST":
-        return "", 200
+        if on:
+            return "", 409
+        else:
+            GPIO.setup(ON_OFF_PIN, GPIO.OUT)
+            GPIO.output(ON_OFF_PIN, True)
+            GPIO.output(ON_OFF_PIN, False)
+
+            return "", 204
     else:
         return jsonify(state=on), 200
 
